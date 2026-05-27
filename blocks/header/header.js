@@ -68,34 +68,57 @@ function decorateNavItem(li) {
 function decorateUtilitySection(section) {
   section.classList.add('utility-section');
 
-  // Find language item — a <li> with nested <ul> of language links
+  const { locale: currentLocale } = getConfig();
   const topItems = section.querySelectorAll(':scope ul > li');
+
   for (const li of topItems) {
     const submenu = li.querySelector(':scope > ul');
     if (!submenu) continue;
 
-    // This li has a nested language list
     li.classList.add('lang-selector');
 
-    // Get the current language label from text or <p>
+    // Get the default label (e.g. "English") from <p> or text node
     const p = li.querySelector(':scope > p');
-    const labelText = p ? p.textContent.trim() : li.firstChild?.textContent?.trim() || 'English';
+    const defaultLabel = p ? p.textContent.trim() : li.firstChild?.textContent?.trim() || 'English';
     if (p) p.remove();
-
-    // Remove bare text nodes (the label text)
     [...li.childNodes].forEach((n) => {
       if (n.nodeType === Node.TEXT_NODE && n.textContent.trim()) n.remove();
     });
 
-    // Create the trigger button
+    // Find the active language in the dropdown based on current locale
+    const langLinks = submenu.querySelectorAll('a');
+    let activeLabel = defaultLabel;
+    let activeLink = null;
+
+    for (const link of langLinks) {
+      const href = link.getAttribute('href');
+      // Match current locale prefix (e.g. "/de/" or "/de")
+      if (currentLocale.prefix && href && (href === `${currentLocale.prefix}/` || href === currentLocale.prefix)) {
+        activeLabel = link.textContent.trim();
+        activeLink = link.closest('li');
+        break;
+      }
+    }
+
+    // Remove the active language from the dropdown
+    if (activeLink) activeLink.remove();
+
+    // If we're not on the default language, add default language to dropdown
+    if (currentLocale.prefix !== '') {
+      const defaultItem = document.createElement('li');
+      const defaultAnchor = document.createElement('a');
+      defaultAnchor.href = '/';
+      defaultAnchor.textContent = defaultLabel;
+      defaultItem.append(defaultAnchor);
+      submenu.prepend(defaultItem);
+    }
+
+    // Create the trigger button with active language
     const btn = document.createElement('button');
     btn.className = 'lang-btn';
-    btn.innerHTML = `${labelText} <span class="chevron">&#9662;</span>`;
-
-    // Insert button before the dropdown list
+    btn.innerHTML = `${activeLabel} <span class="chevron">&#9662;</span>`;
     li.prepend(btn);
 
-    // Style the dropdown
     submenu.classList.add('lang-dropdown');
 
     btn.addEventListener('click', (e) => {
@@ -103,7 +126,6 @@ function decorateUtilitySection(section) {
       li.classList.toggle('is-open');
     });
 
-    // Close on outside click
     document.addEventListener('click', (e) => {
       if (!li.contains(e.target)) li.classList.remove('is-open');
     });
