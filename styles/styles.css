@@ -189,7 +189,8 @@
   --body-line-height: 1.6;
 
   /* misc */
-  --header-height: 72px;
+  --header-height: 64px;
+  --utility-bar-height: 36px;
   --breadcrumb-height: 24px;
 }
 
@@ -212,7 +213,7 @@ body {
   font-family: "Trebuchet MS", sans-serif;
   font-size: var(--body-font-size-m);
   line-height: var(--body-line-height);
-  padding: var(--header-height) 0 0;
+  padding: calc(var(--header-height) + var(--utility-bar-height)) 0 0;
 
   &.session {
     /* only allow font loading if a session */
