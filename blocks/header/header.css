@@ -308,13 +308,13 @@ header {
       display: flex;
       flex-direction: row;
       align-items: center;
-      max-width: 1480px;
-      margin: 0 auto;
       padding: 0 48px;
       height: var(--header-height);
     }
 
     .brand-section {
+      flex-shrink: 0;
+
       .default-content {
         padding: 0;
       }
@@ -326,7 +326,8 @@ header {
 
     .main-nav-section {
       display: block;
-      margin-left: var(--spacing-xl);
+      margin-left: var(--spacing-xxl);
+      flex-shrink: 0;
 
       .main-nav-list {
         display: flex;
@@ -385,6 +386,7 @@ header {
       align-items: center;
       padding: 0;
       margin-left: auto;
+      flex-shrink: 0;
     }
 
     &.is-mobile-open {
