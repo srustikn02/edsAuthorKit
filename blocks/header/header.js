@@ -84,23 +84,28 @@ function decorateUtilitySection(section) {
       if (n.nodeType === Node.TEXT_NODE && n.textContent.trim()) n.remove();
     });
 
+    // Match current page URL against dropdown hrefs
+    const { pathname } = window.location;
     const langLinks = submenu.querySelectorAll('a');
     let activeLabel = defaultLabel;
     let activeLink = null;
+    let isOnDefault = true;
 
     for (const link of langLinks) {
       const href = link.getAttribute('href');
-      if (currentLocale.prefix && href
-        && (href === `${currentLocale.prefix}/` || href === currentLocale.prefix)) {
+      if (href && (pathname === href || pathname.startsWith(`${href}/`))) {
         activeLabel = link.textContent.trim();
         activeLink = link.closest('li');
+        isOnDefault = false;
         break;
       }
     }
 
+    // Remove the matched language from dropdown
     if (activeLink) activeLink.remove();
 
-    if (currentLocale.prefix !== '') {
+    // If not on default language, add default back to dropdown
+    if (!isOnDefault) {
       const defaultItem = document.createElement('li');
       const defaultAnchor = document.createElement('a');
       defaultAnchor.href = '/';
