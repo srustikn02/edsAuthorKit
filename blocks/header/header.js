@@ -38,15 +38,13 @@ function decorateNavItem(li) {
   let trigger = li.querySelector(':scope > a') || li.querySelector(':scope > p > a');
 
   if (!trigger && submenu) {
-    // "Categories" is plain text with a nested <ul> — wrap text in a <button>
-    const textNode = [...li.childNodes].find(
-      (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
-    );
-    if (textNode) {
+    // "Categories" is inside a <p> with no link — replace <p> with a clickable <button>
+    const p = li.querySelector(':scope > p');
+    if (p) {
       const btn = document.createElement('button');
       btn.className = 'main-nav-link has-dropdown';
-      btn.textContent = textNode.textContent.trim();
-      textNode.replaceWith(btn);
+      btn.textContent = p.textContent.trim();
+      p.replaceWith(btn);
       trigger = btn;
     }
   }
@@ -70,24 +68,44 @@ function decorateNavItem(li) {
 function decorateUtilitySection(section) {
   section.classList.add('utility-section');
 
-  // Find language item (last list item) and make it a dropdown trigger
-  const items = section.querySelectorAll('li');
-  const langItem = [...items].find((li) => {
-    const text = li.textContent.trim().toLowerCase();
-    return !li.querySelector('a') && text.length > 0;
-  });
+  // Find language item — a <li> with nested <ul> of language links
+  const topItems = section.querySelectorAll(':scope ul > li');
+  for (const li of topItems) {
+    const submenu = li.querySelector(':scope > ul');
+    if (!submenu) continue;
 
-  if (langItem) {
-    langItem.classList.add('lang-selector');
+    // This li has a nested language list
+    li.classList.add('lang-selector');
+
+    // Get the current language label from text or <p>
+    const p = li.querySelector(':scope > p');
+    const labelText = p ? p.textContent.trim() : li.firstChild?.textContent?.trim() || 'English';
+    if (p) p.remove();
+
+    // Remove bare text nodes (the label text)
+    [...li.childNodes].forEach((n) => {
+      if (n.nodeType === Node.TEXT_NODE && n.textContent.trim()) n.remove();
+    });
+
+    // Create the trigger button
     const btn = document.createElement('button');
     btn.className = 'lang-btn';
-    btn.textContent = langItem.textContent.trim();
-    btn.innerHTML += ' <span class="chevron">&#9662;</span>';
-    langItem.textContent = '';
-    langItem.append(btn);
+    btn.innerHTML = `${labelText} <span class="chevron">&#9662;</span>`;
 
-    btn.addEventListener('click', () => {
-      langItem.classList.toggle('is-open');
+    // Insert button before the dropdown list
+    li.prepend(btn);
+
+    // Style the dropdown
+    submenu.classList.add('lang-dropdown');
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      li.classList.toggle('is-open');
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!li.contains(e.target)) li.classList.remove('is-open');
     });
   }
 }
@@ -145,11 +163,24 @@ async function decorateHeader(fragment) {
     sectionIdx += 1;
   }
 
-  if (sections[sectionIdx]) decorateBrandSection(sections[sectionIdx]);
+  const brandSection = sections[sectionIdx];
+  if (brandSection) decorateBrandSection(brandSection);
   sectionIdx += 1;
-  if (sections[sectionIdx]) decorateNavSection(sections[sectionIdx]);
+
+  const navSection = sections[sectionIdx];
+  if (navSection) decorateNavSection(navSection);
   sectionIdx += 1;
-  if (sections[sectionIdx]) decorateActionsSection(sections[sectionIdx]);
+
+  const actionsSection = sections[sectionIdx];
+  if (actionsSection) decorateActionsSection(actionsSection);
+
+  // Wrap brand + nav + actions into a horizontal main row
+  const mainRow = document.createElement('div');
+  mainRow.className = 'header-main-row';
+  if (brandSection) mainRow.append(brandSection);
+  if (navSection) mainRow.append(navSection);
+  if (actionsSection) mainRow.append(actionsSection);
+  fragment.append(mainRow);
 
   decorateNavToggle(fragment);
 }
