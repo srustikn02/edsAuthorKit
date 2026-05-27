@@ -2,14 +2,12 @@
    Waters Blog Footer
    Zone 1: Brand (logo | Blog) + Social icons
    Zone 2: Legal links (left) + Copyright (right)
+   Text color is handled by Section Metadata
+   background + dark-scheme auto-detection
    ============================================ */
 
 footer {
-  background-color: #54616c;
-  color: #fff;
-
   a {
-    color: #fff;
     text-decoration: none;
 
     &:hover {
@@ -22,15 +20,17 @@ footer {
     margin: 0 auto;
   }
 
-  .section .default-content {
-    max-width: initial;
-    margin: initial;
-  }
-
-  /* ----- Zone 1: Brand + Social ----- */
-  .section-top {
+  .section {
     padding: 40px 48px;
 
+    .default-content {
+      max-width: initial;
+      margin: initial;
+    }
+  }
+
+  /* ----- Zone 1: First section — Brand + Social ----- */
+  .section:first-child {
     picture {
       display: inline-block;
 
@@ -44,7 +44,6 @@ footer {
       margin: 0;
     }
 
-    /* Social icons row */
     ul {
       display: flex;
       flex-wrap: wrap;
@@ -58,27 +57,21 @@ footer {
         margin: 0;
       }
 
-      /* "Follow Our Channels" is the first li or a paragraph */
       a {
         display: flex;
         align-items: center;
       }
 
-      .icon {
+      svg {
         width: 24px;
         height: 24px;
-
-        svg {
-          width: 24px;
-          height: 24px;
-          fill: #fff;
-        }
+        fill: currentColor;
       }
     }
   }
 
-  /* ----- Zone 2: Legal + Copyright ----- */
-  .section-bottom {
+  /* ----- Zone 2: Last section — Legal + Copyright ----- */
+  .section:last-child {
     padding: 20px 48px;
     border-top: 1px solid rgba(255 255 255 / 15%);
     font-size: var(--body-font-size-xs);
@@ -96,7 +89,6 @@ footer {
       }
     }
 
-    /* Copyright paragraph */
     p {
       margin: 0;
       white-space: nowrap;
@@ -109,7 +101,7 @@ footer {
    ============================================ */
 @media (width < 900px) {
   footer {
-    .section-top {
+    .section:first-child {
       padding: 32px 20px;
       text-align: center;
 
@@ -119,7 +111,7 @@ footer {
       }
     }
 
-    .section-bottom {
+    .section:last-child {
       padding: 20px;
       text-align: center;
 
@@ -136,7 +128,7 @@ footer {
    ============================================ */
 @media (width >= 900px) {
   footer {
-    .section-top {
+    .section:first-child {
       .default-content {
         display: flex;
         align-items: center;
@@ -144,7 +136,7 @@ footer {
       }
     }
 
-    .section-bottom {
+    .section:last-child {
       .default-content {
         display: flex;
         align-items: center;
