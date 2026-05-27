@@ -1,57 +1,155 @@
+/* ============================================
+   Waters Blog Footer
+   Zone 1: Brand (logo | Blog) + Social icons
+   Zone 2: Legal links (left) + Copyright (right)
+   ============================================ */
+
 footer {
+  background-color: #54616c;
+  color: #fff;
+
   a {
+    color: #fff;
     text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .footer-content {
-    max-width: var(--grid-container-width);
-    margin: 48px auto;
-    font-size: 14px;
+    max-width: 1480px;
+    margin: 0 auto;
   }
 
-  .section-legal ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .section .default-content {
+    max-width: initial;
+    margin: initial;
   }
 
-  .section-copyright p {
-    margin: 0;
-  }
+  /* ----- Zone 1: Brand + Social ----- */
+  .section-top {
+    padding: 40px 48px;
 
-  .section {
-    .default-content {
-      max-width: initial;
-      margin: initial;
+    picture {
+      display: inline-block;
+
+      img {
+        width: 200px;
+        height: auto;
+      }
+    }
+
+    p {
+      margin: 0;
+    }
+
+    /* Social icons row */
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin: 0;
+      }
+
+      /* "Follow Our Channels" is the first li or a paragraph */
+      a {
+        display: flex;
+        align-items: center;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
+
+        svg {
+          width: 24px;
+          height: 24px;
+          fill: #fff;
+        }
+      }
     }
   }
-}
 
-@media (width >= 900px) {
-  footer {
-    margin: 0;
+  /* ----- Zone 2: Legal + Copyright ----- */
+  .section-bottom {
+    padding: 20px 48px;
+    border-top: 1px solid rgba(255 255 255 / 15%);
+    font-size: var(--body-font-size-xs);
 
-    .section-legal {
+    ul {
       display: flex;
-      justify-content: end;
-      gap: var(--spacing-xl);
-      margin-bottom: 24px;
-
-      ul {
-        display: flex;
-        justify-content: end;
-        gap: var(--spacing-xl);
-      }
+      flex-wrap: wrap;
+      gap: 20px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
 
       li {
         margin: 0;
       }
     }
 
-    .section-copyright {
-      display: flex;
-      justify-content: end;
-      gap: var(--spacing-xl);
+    /* Copyright paragraph */
+    p {
+      margin: 0;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* ============================================
+   Mobile (< 900px)
+   ============================================ */
+@media (width < 900px) {
+  footer {
+    .section-top {
+      padding: 32px 20px;
+      text-align: center;
+
+      ul {
+        justify-content: center;
+        margin-top: 16px;
+      }
+    }
+
+    .section-bottom {
+      padding: 20px;
+      text-align: center;
+
+      ul {
+        justify-content: center;
+        margin-bottom: 12px;
+      }
+    }
+  }
+}
+
+/* ============================================
+   Desktop (≥ 900px)
+   ============================================ */
+@media (width >= 900px) {
+  footer {
+    .section-top {
+      .default-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .section-bottom {
+      .default-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
     }
   }
 }
