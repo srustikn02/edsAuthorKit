@@ -213,7 +213,7 @@ body {
   font-family: "Trebuchet MS", sans-serif;
   font-size: var(--body-font-size-m);
   line-height: var(--body-line-height);
-  padding: calc(var(--header-height) + var(--utility-bar-height)) 0 0;
+  padding: 0;
 
   &.session {
     /* only allow font loading if a session */

@@ -8,13 +8,8 @@ header {
   --logo-height: 40px;
 
   display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   z-index: 1000;
-  overflow: hidden;
-  max-height: var(--header-height);
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0 0 0 / 8%);
 
@@ -301,8 +296,6 @@ header {
    ============================================ */
 @media (width >= 900px) {
   header {
-    overflow: visible;
-    max-height: none;
 
     .header-main-row {
       display: flex;
