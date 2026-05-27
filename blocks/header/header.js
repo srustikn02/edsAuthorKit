@@ -30,16 +30,36 @@ function toggleMenu(menu) {
 
 function decorateNavItem(li) {
   li.classList.add('main-nav-item');
-  const link = li.querySelector(':scope > a') || li.querySelector(':scope > p > a');
-  if (link) link.classList.add('main-nav-link');
 
   // Check if this nav item has a nested sub-menu (ul)
   const submenu = li.querySelector(':scope > ul');
+
+  // Find the link OR create a clickable trigger from plain text
+  let trigger = li.querySelector(':scope > a') || li.querySelector(':scope > p > a');
+
+  if (!trigger && submenu) {
+    // "Categories" is plain text with a nested <ul> — wrap text in a <button>
+    const textNode = [...li.childNodes].find(
+      (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
+    );
+    if (textNode) {
+      const btn = document.createElement('button');
+      btn.className = 'main-nav-link has-dropdown';
+      btn.textContent = textNode.textContent.trim();
+      textNode.replaceWith(btn);
+      trigger = btn;
+    }
+  }
+
+  if (trigger && trigger.tagName === 'A') {
+    trigger.classList.add('main-nav-link');
+  }
+
   if (submenu) {
     submenu.classList.add('nav-dropdown');
-    if (link) {
-      link.classList.add('has-dropdown');
-      link.addEventListener('click', (e) => {
+    if (trigger) {
+      trigger.classList.add('has-dropdown');
+      trigger.addEventListener('click', (e) => {
         e.preventDefault();
         toggleMenu(li);
       });
@@ -49,16 +69,34 @@ function decorateNavItem(li) {
 
 function decorateUtilitySection(section) {
   section.classList.add('utility-section');
+
+  // Find language item (last list item) and make it a dropdown trigger
+  const items = section.querySelectorAll('li');
+  const langItem = [...items].find((li) => {
+    const text = li.textContent.trim().toLowerCase();
+    return !li.querySelector('a') && text.length > 0;
+  });
+
+  if (langItem) {
+    langItem.classList.add('lang-selector');
+    const btn = document.createElement('button');
+    btn.className = 'lang-btn';
+    btn.textContent = langItem.textContent.trim();
+    btn.innerHTML += ' <span class="chevron">&#9662;</span>';
+    langItem.textContent = '';
+    langItem.append(btn);
+
+    btn.addEventListener('click', () => {
+      langItem.classList.toggle('is-open');
+    });
+  }
 }
 
 function decorateBrandSection(section) {
   section.classList.add('brand-section');
   const brandLink = section.querySelector('a');
   if (!brandLink) return;
-  const picture = brandLink.querySelector('picture');
-  if (picture) {
-    brandLink.classList.add('brand-link');
-  }
+  brandLink.classList.add('brand-link');
 }
 
 function decorateNavSection(section) {
@@ -80,7 +118,6 @@ function decorateNavSection(section) {
 
 function decorateActionsSection(section) {
   section.classList.add('actions-section');
-  // Load any blocks inside the actions section (e.g., search)
   const blocks = section.querySelectorAll('.block-content > div[class]');
   for (const block of blocks) {
     loadBlock(block);
@@ -101,12 +138,8 @@ function decorateNavToggle(header) {
 
 async function decorateHeader(fragment) {
   const sections = [...fragment.querySelectorAll(':scope > .section')];
-
-  // Detect if first section is utility bar (has no picture/image = not brand)
-  // Waters Blog: Section 0 = utility, Section 1 = brand, Section 2 = nav, Section 3 = actions
   let sectionIdx = 0;
 
-  // If there are 4+ sections, first is utility bar
   if (sections.length >= 4) {
     decorateUtilitySection(sections[sectionIdx]);
     sectionIdx += 1;
@@ -121,10 +154,6 @@ async function decorateHeader(fragment) {
   decorateNavToggle(fragment);
 }
 
-/**
- * loads and decorates the header
- * @param {Element} el The header element
- */
 export default async function init(el) {
   const headerMeta = getMetadata('header');
   const path = headerMeta || HEADER_PATH;

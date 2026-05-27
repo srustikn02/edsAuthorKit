@@ -75,6 +75,33 @@ header {
         align-items: center;
       }
     }
+
+    /* Language selector */
+    .lang-selector {
+      position: relative;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      font: inherit;
+      font-size: var(--body-font-size-xs);
+      color: var(--color-gray-700);
+      cursor: pointer;
+      padding: 0;
+
+      .chevron {
+        font-size: 10px;
+        transition: transform 0.2s;
+      }
+    }
+
+    .lang-selector.is-open .lang-btn .chevron {
+      transform: rotate(180deg);
+    }
   }
 
   /* ----- Brand Section ----- */
@@ -152,6 +179,11 @@ header {
       font-size: var(--body-font-size-m);
       font-weight: 500;
       color: var(--color-gray-800);
+      background: none;
+      border: none;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: left;
 
       &.has-dropdown::after {
         content: "";
