@@ -24,15 +24,16 @@ function renderCard(post) {
   const card = document.createElement('article');
   card.className = 'blog-card';
 
-  const imageUrl = post.image || '/img/default-blog.png';
+  const hasImage = post.image && !post.image.includes('default-meta-image');
+  const imageUrl = hasImage ? post.image.split('?')[0] : '';
   const date = formatDate(post.date);
   const readTime = estimateReadingTime(post.content);
   const tags = parseTags(post.tags);
 
   card.innerHTML = `
-    <a href="${post.path}" class="blog-card-image">
-      <img src="${imageUrl.split('?')[0]}?width=480&format=webply&optimize=medium" alt="${post.title}" loading="lazy" />
-    </a>
+    ${imageUrl ? `<a href="${post.path}" class="blog-card-image">
+      <img src="${imageUrl}?width=480&format=webply&optimize=medium" alt="${post.title}" loading="lazy" />
+    </a>` : ''}
     <div class="blog-card-content">
       <h3 class="blog-card-title">
         <a href="${post.path}">${post.title}</a>
