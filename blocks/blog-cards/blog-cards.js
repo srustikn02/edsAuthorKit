@@ -110,7 +110,7 @@ function mergeMetadata(posts, meta) {
       tags: post.tags || extra['article:tag'] || '',
       featured: post.featured || extra.featured || '',
       description: post.description || extra.description || '',
-      image: post.image || extra['og:image'] || '',
+      image: (post.image && !post.image.includes('default-meta-image')) ? post.image : (extra['og:image'] || ''),
     };
   });
 }
