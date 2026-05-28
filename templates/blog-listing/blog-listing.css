@@ -1,0 +1,68 @@
+/* ============================================
+   Template: Blog Listing
+   Applied to: /blog/ index page
+   Metadata:  template | blog-listing
+   Body class: .blog-listing-template
+   ============================================ */
+
+/* Hide page while template loads */
+body.has-template main {
+  visibility: hidden;
+}
+
+.blog-listing-template {
+  /* --- Hero / Featured Post Section --- */
+  main > .section:first-child {
+    max-width: 100%;
+    padding: 40px 48px;
+    background-color: var(--color-gray-100);
+
+    .default-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  }
+
+  /* --- Content Sections (filter, cards, tags) --- */
+  main > .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 48px;
+  }
+
+  /* --- Recent Posts heading --- */
+  main h2 {
+    font-size: var(--heading-font-size-xl);
+    font-weight: 600;
+    margin-bottom: var(--spacing-l);
+  }
+
+  /* --- Tag / Category links in metadata --- */
+  main a[href*="/category/"] {
+    color: #00778b;
+    font-weight: 500;
+  }
+
+  /* --- Popular Topics section (last before footer) --- */
+  main > .section:last-child {
+    max-width: 100%;
+    padding: 48px;
+    background-color: #e8f4f8;
+
+    .default-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  }
+}
+
+/* Mobile */
+@media (width < 900px) {
+  .blog-listing-template {
+    main > .section:first-child,
+    main > .section,
+    main > .section:last-child {
+      padding: 24px 20px;
+    }
+  }
+}
