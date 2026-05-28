@@ -7,13 +7,28 @@ function parseTags(raw) {
 }
 
 function extractSheetData(json, sheetName) {
-  // Multi-sheet: { tags: { data: [...] }, categories: { data: [...] } }
   if (json[sheetName]?.data) return json[sheetName].data;
-  // Single sheet: { data: [...] }
   if (json.data) return json.data;
-  // Try first non-meta key
   const key = Object.keys(json).find((k) => !k.startsWith(':') && json[k]?.data);
   return key ? json[key].data : [];
+}
+
+async function fetchMetadata() {
+  try {
+    const resp = await fetch('/blog/metadata.json');
+    if (!resp.ok) return {};
+    const json = await resp.json();
+    const rows = json.data || json.metadata?.data || json[Object.keys(json).find((k) => !k.startsWith(':'))]?.data || [];
+    const map = {};
+    for (const row of rows) {
+      const url = row.URL || row.url || row.Path || row.path;
+      if (url && !url.includes('*')) {
+        const key = url.startsWith('/blog') ? url : `/blog${url}`;
+        map[key] = row;
+      }
+    }
+    return map;
+  } catch { return {}; }
 }
 
 export default async function init(el) {
@@ -22,15 +37,17 @@ export default async function init(el) {
 
   let tags = [];
   let posts = [];
+  let meta = {};
 
   try {
-    const [taxResp, postResp] = await Promise.all([
+    const [taxResp, postResp, metaData] = await Promise.all([
       fetch(source.split('?')[0]),
       fetch('/blog/query-index.json'),
+      fetchMetadata(),
     ]);
+    meta = metaData;
     if (taxResp.ok) {
       const taxJson = await taxResp.json();
-      // Try "tags" sheet first, fall back to "categories"
       tags = extractSheetData(taxJson, 'tags');
       if (!tags.length) tags = extractSheetData(taxJson, 'categories');
     }
@@ -44,10 +61,12 @@ export default async function init(el) {
 
   if (!tags.length) return;
 
-  // Count occurrences of each tag across all posts
+  // Count tags — merge query-index tags with metadata tags
   const tagCounts = {};
   for (const post of posts) {
-    const postTags = parseTags(post.tags);
+    const hasIndexTags = post.tags && (Array.isArray(post.tags) ? post.tags.length : post.tags);
+    const extra = meta[post.path] || {};
+    const postTags = parseTags(hasIndexTags ? post.tags : (extra['article:tag'] || ''));
     for (const t of postTags) {
       tagCounts[t.toLowerCase()] = (tagCounts[t.toLowerCase()] || 0) + 1;
     }
