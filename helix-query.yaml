@@ -5,6 +5,9 @@ indices:
       - /blog/**
     exclude:
       - /blog/index
+      - /blog/index*
+      - /blog/metadata
+      - /blog/taxonomy
     target: /blog/query-index.json
     properties:
       title:
