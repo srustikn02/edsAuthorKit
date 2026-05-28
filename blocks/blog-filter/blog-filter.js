@@ -8,11 +8,15 @@ export default async function init(el) {
   let categories = [];
   try {
     const resp = await fetch(taxonomyUrl.includes('?') ? taxonomyUrl : `${taxonomyUrl}?sheet=categories`);
-    const json = await resp.json();
-    categories = json.data || [];
+    if (resp.ok) {
+      const json = await resp.json();
+      categories = json.data || [];
+    }
   } catch (e) {
-    console.error('Failed to load taxonomy', e);
+    /* taxonomy not available yet */
   }
+
+  if (!categories.length) return;
 
   // Build filter UI
   const wrapper = document.createElement('div');

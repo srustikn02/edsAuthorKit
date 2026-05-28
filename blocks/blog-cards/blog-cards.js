@@ -81,10 +81,16 @@ export default async function init(el) {
   let allPosts = [];
   try {
     const resp = await fetch(source);
-    const json = await resp.json();
-    allPosts = json.data || [];
+    if (resp.ok) {
+      const json = await resp.json();
+      allPosts = json.data || [];
+    }
   } catch (e) {
-    el.textContent = 'Failed to load posts.';
+    /* index not available yet */
+  }
+
+  if (!allPosts.length) {
+    el.innerHTML = '<p>No posts available yet. Publish blog pages to populate the index.</p>';
     return;
   }
 

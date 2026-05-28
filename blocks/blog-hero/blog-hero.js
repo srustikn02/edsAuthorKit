@@ -11,6 +11,7 @@ export default async function init(el) {
   let post = null;
   try {
     const resp = await fetch(source);
+    if (!resp.ok) return;
     const json = await resp.json();
     const posts = (json.data || []).filter((p) => p.featured === 'true');
     posts.sort((a, b) => (b.date || 0) - (a.date || 0));

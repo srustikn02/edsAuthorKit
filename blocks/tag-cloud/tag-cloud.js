@@ -10,13 +10,19 @@ export default async function init(el) {
       fetch(source.includes('?') ? source : `${source}?sheet=tags`),
       fetch('/blog/query-index.json'),
     ]);
-    const taxJson = await taxResp.json();
-    const postJson = await postResp.json();
-    tags = taxJson.data || [];
-    posts = postJson.data || [];
+    if (taxResp.ok) {
+      const taxJson = await taxResp.json();
+      tags = taxJson.data || [];
+    }
+    if (postResp.ok) {
+      const postJson = await postResp.json();
+      posts = postJson.data || [];
+    }
   } catch (e) {
-    return;
+    /* data not available yet */
   }
+
+  if (!tags.length) return;
 
   // Count occurrences of each tag across all posts
   const tagCounts = {};
