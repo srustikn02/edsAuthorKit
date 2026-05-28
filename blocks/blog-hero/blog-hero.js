@@ -43,6 +43,7 @@ export default async function init(el) {
         date: p.date || extra['publication-date'] || '',
         tags: p.tags || extra['article:tag'] || '',
         featured: p.featured || extra.featured || '',
+        image: p.image || extra['og:image'] || '',
       };
     });
     posts = posts.filter((p) => p.featured === 'true');
