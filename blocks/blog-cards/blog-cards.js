@@ -32,7 +32,7 @@ function renderCard(post) {
 
   card.innerHTML = `
     ${imageUrl ? `<a href="${post.path}" class="blog-card-image">
-      <img src="${imageUrl}?width=480&format=webply&optimize=medium" alt="${post.title}" loading="lazy" />
+      <img src="${imageUrl}?width=480&format=webply&optimize=medium" alt="${post.title}" loading="lazy" onerror="this.closest('.blog-card-image').remove()" />
     </a>` : ''}
     <div class="blog-card-content">
       <h3 class="blog-card-title">
