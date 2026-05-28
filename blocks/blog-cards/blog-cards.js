@@ -31,7 +31,7 @@ function renderCard(post) {
 
   card.innerHTML = `
     <a href="${post.path}" class="blog-card-image">
-      <img src="${imageUrl}?width=480&format=webply&optimize=medium" alt="${post.title}" loading="lazy" />
+      <img src="${imageUrl.split('?')[0]}?width=480&format=webply&optimize=medium" alt="${post.title}" loading="lazy" />
     </a>
     <div class="blog-card-content">
       <h3 class="blog-card-title">

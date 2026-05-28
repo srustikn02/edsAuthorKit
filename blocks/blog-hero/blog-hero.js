@@ -49,7 +49,7 @@ export default async function init(el) {
       <p class="blog-hero-cta"><a href="${post.path}">Read More</a></p>
     </div>
     <div class="blog-hero-image">
-      ${post.image ? `<img src="${post.image}?width=750&format=webply&optimize=medium" alt="${post.title}" loading="eager" />` : ''}
+      ${post.image ? `<img src="${post.image.split('?')[0]}?width=750&format=webply&optimize=medium" alt="${post.title}" loading="eager" />` : ''}
     </div>
   `;
 }
