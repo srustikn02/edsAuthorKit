@@ -100,6 +100,12 @@ async function fetchMetadata() {
   }
 }
 
+function hasValue(val) {
+  if (!val) return false;
+  if (Array.isArray(val)) return val.length > 0;
+  return true;
+}
+
 function mergeMetadata(posts, meta) {
   return posts.map((post) => {
     const extra = meta[post.path] || {};
@@ -107,10 +113,12 @@ function mergeMetadata(posts, meta) {
       ...post,
       author: post.author || extra.author || '',
       date: post.date || extra['publication-date'] || '',
-      tags: post.tags || extra['article:tag'] || '',
+      tags: hasValue(post.tags) ? post.tags : (extra['article:tag'] || ''),
       featured: post.featured || extra.featured || '',
       description: post.description || extra.description || '',
-      image: (post.image && !post.image.includes('default-meta-image')) ? post.image : (extra['og:image'] || ''),
+      image: (post.image && !post.image.includes('default-meta-image'))
+        ? post.image
+        : (extra['og:image'] || extra['og-image'] || extra.image || ''),
     };
   });
 }

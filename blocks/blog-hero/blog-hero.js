@@ -35,15 +35,18 @@ export default async function init(el) {
     const [resp, meta] = await Promise.all([fetch(source), fetchMetadata()]);
     if (!resp.ok) return;
     const json = await resp.json();
+    const hasVal = (v) => v && !(Array.isArray(v) && !v.length);
     let posts = (json.data || []).map((p) => {
       const extra = meta[p.path] || {};
       return {
         ...p,
         author: p.author || extra.author || '',
         date: p.date || extra['publication-date'] || '',
-        tags: p.tags || extra['article:tag'] || '',
+        tags: hasVal(p.tags) ? p.tags : (extra['article:tag'] || ''),
         featured: p.featured || extra.featured || '',
-        image: (p.image && !p.image.includes('default-meta-image')) ? p.image : (extra['og:image'] || ''),
+        image: (p.image && !p.image.includes('default-meta-image'))
+          ? p.image
+          : (extra['og:image'] || extra['og-image'] || extra.image || ''),
       };
     });
     posts = posts.filter((p) => p.featured === 'true');
