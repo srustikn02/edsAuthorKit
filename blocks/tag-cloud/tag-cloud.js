@@ -6,6 +6,16 @@ function parseTags(raw) {
   return raw.split(',').map((t) => t.trim()).filter(Boolean);
 }
 
+function extractSheetData(json, sheetName) {
+  // Multi-sheet: { tags: { data: [...] }, categories: { data: [...] } }
+  if (json[sheetName]?.data) return json[sheetName].data;
+  // Single sheet: { data: [...] }
+  if (json.data) return json.data;
+  // Try first non-meta key
+  const key = Object.keys(json).find((k) => !k.startsWith(':') && json[k]?.data);
+  return key ? json[key].data : [];
+}
+
 export default async function init(el) {
   const source = el.querySelector('a')?.href || '/blog/taxonomy.json';
   el.innerHTML = '';
@@ -15,12 +25,14 @@ export default async function init(el) {
 
   try {
     const [taxResp, postResp] = await Promise.all([
-      fetch(source.includes('?') ? source : `${source}?sheet=tags`),
+      fetch(source.split('?')[0]),
       fetch('/blog/query-index.json'),
     ]);
     if (taxResp.ok) {
       const taxJson = await taxResp.json();
-      tags = taxJson.data || [];
+      // Try "tags" sheet first, fall back to "categories"
+      tags = extractSheetData(taxJson, 'tags');
+      if (!tags.length) tags = extractSheetData(taxJson, 'categories');
     }
     if (postResp.ok) {
       const postJson = await postResp.json();
@@ -46,9 +58,8 @@ export default async function init(el) {
 
   for (const tag of tags) {
     const name = tag.Tag || tag.tag || tag.Name || tag.name;
-    const slug = tag.Slug || tag.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (!name) continue;
     const count = tagCounts[name.toLowerCase()] || 0;
-    if (count === 0) continue;
 
     const link = document.createElement('a');
     link.href = `/blog/?category=${encodeURIComponent(name)}`;
@@ -57,5 +68,6 @@ export default async function init(el) {
     wrapper.append(link);
   }
 
+  if (!wrapper.children.length) return;
   el.append(wrapper);
 }
