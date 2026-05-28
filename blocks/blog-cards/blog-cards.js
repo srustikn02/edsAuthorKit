@@ -8,9 +8,10 @@ function parseTags(raw) {
   return raw.split(',').map((t) => t.trim()).filter(Boolean);
 }
 
-function formatDate(timestamp) {
-  if (!timestamp) return '';
-  const date = new Date(timestamp * 1000);
+function formatDate(value) {
+  if (!value) return '';
+  const date = typeof value === 'number' ? new Date(value * 1000) : new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
@@ -81,6 +82,38 @@ function renderPagination(currentPage, totalPages, onPageChange) {
   return nav;
 }
 
+async function fetchMetadata() {
+  try {
+    const resp = await fetch('/blog/metadata.json');
+    if (!resp.ok) return {};
+    const json = await resp.json();
+    const rows = json.data || [];
+    const map = {};
+    for (const row of rows) {
+      if (row.URL && !row.URL.includes('*')) {
+        map[`/blog${row.URL}`] = row;
+      }
+    }
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+function mergeMetadata(posts, meta) {
+  return posts.map((post) => {
+    const extra = meta[post.path] || {};
+    return {
+      ...post,
+      author: post.author || extra.author || '',
+      date: post.date || extra['publication-date'] || '',
+      tags: post.tags || extra['article:tag'] || '',
+      featured: post.featured || extra.featured || '',
+      description: post.description || extra.description || '',
+    };
+  });
+}
+
 export default async function init(el) {
   const source = el.querySelector('a')?.href || '/blog/query-index.json';
   const isFeatured = el.classList.contains('featured');
@@ -89,10 +122,13 @@ export default async function init(el) {
 
   let allPosts = [];
   try {
-    const resp = await fetch(source);
-    if (resp.ok) {
-      const json = await resp.json();
-      allPosts = json.data || [];
+    const [indexResp, meta] = await Promise.all([
+      fetch(source),
+      fetchMetadata(),
+    ]);
+    if (indexResp.ok) {
+      const json = await indexResp.json();
+      allPosts = mergeMetadata(json.data || [], meta);
     }
   } catch (e) {
     /* index not available yet */

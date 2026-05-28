@@ -6,10 +6,24 @@ function parseTags(raw) {
   return raw.split(',').map((t) => t.trim()).filter(Boolean);
 }
 
-function formatDate(timestamp) {
-  if (!timestamp) return '';
-  const date = new Date(timestamp * 1000);
+function formatDate(value) {
+  if (!value) return '';
+  const date = typeof value === 'number' ? new Date(value * 1000) : new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+async function fetchMetadata() {
+  try {
+    const resp = await fetch('/blog/metadata.json');
+    if (!resp.ok) return {};
+    const json = await resp.json();
+    const map = {};
+    for (const row of (json.data || [])) {
+      if (row.URL && !row.URL.includes('*')) map[`/blog${row.URL}`] = row;
+    }
+    return map;
+  } catch { return {}; }
 }
 
 export default async function init(el) {
@@ -18,10 +32,20 @@ export default async function init(el) {
 
   let post = null;
   try {
-    const resp = await fetch(source);
+    const [resp, meta] = await Promise.all([fetch(source), fetchMetadata()]);
     if (!resp.ok) return;
     const json = await resp.json();
-    const posts = (json.data || []).filter((p) => p.featured === 'true');
+    let posts = (json.data || []).map((p) => {
+      const extra = meta[p.path] || {};
+      return {
+        ...p,
+        author: p.author || extra.author || '',
+        date: p.date || extra['publication-date'] || '',
+        tags: p.tags || extra['article:tag'] || '',
+        featured: p.featured || extra.featured || '',
+      };
+    });
+    posts = posts.filter((p) => p.featured === 'true');
     posts.sort((a, b) => (b.date || 0) - (a.date || 0));
     [post] = posts;
   } catch (e) {
