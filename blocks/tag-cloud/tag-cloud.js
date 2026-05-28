@@ -1,3 +1,9 @@
+function parseTags(raw) {
+  if (!raw) return [];
+  try { return JSON.parse(raw); } catch { /* not JSON */ }
+  return raw.split(',').map((t) => t.trim()).filter(Boolean);
+}
+
 export default async function init(el) {
   const source = el.querySelector('a')?.href || '/blog/taxonomy.json';
   el.innerHTML = '';
@@ -27,7 +33,7 @@ export default async function init(el) {
   // Count occurrences of each tag across all posts
   const tagCounts = {};
   for (const post of posts) {
-    const postTags = post.tags ? JSON.parse(post.tags) : [];
+    const postTags = parseTags(post.tags);
     for (const t of postTags) {
       tagCounts[t.toLowerCase()] = (tagCounts[t.toLowerCase()] || 0) + 1;
     }

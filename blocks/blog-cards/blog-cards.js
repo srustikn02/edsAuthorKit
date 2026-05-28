@@ -1,5 +1,11 @@
 const POSTS_PER_PAGE = 6;
 
+function parseTags(raw) {
+  if (!raw) return [];
+  try { return JSON.parse(raw); } catch { /* not JSON */ }
+  return raw.split(',').map((t) => t.trim()).filter(Boolean);
+}
+
 function formatDate(timestamp) {
   if (!timestamp) return '';
   const date = new Date(timestamp * 1000);
@@ -19,7 +25,7 @@ function renderCard(post) {
   const imageUrl = post.image || '/img/default-blog.png';
   const date = formatDate(post.date);
   const readTime = estimateReadingTime(post.content);
-  const tags = post.tags ? JSON.parse(post.tags) : [];
+  const tags = parseTags(post.tags);
 
   card.innerHTML = `
     <a href="${post.path}" class="blog-card-image">
@@ -113,7 +119,7 @@ export default async function init(el) {
   function render() {
     let filtered = currentFilter
       ? allPosts.filter((p) => {
-          const tags = p.tags ? JSON.parse(p.tags) : [];
+          const tags = parseTags(p.tags);
           return tags.includes(currentFilter);
         })
       : allPosts;

@@ -1,3 +1,9 @@
+function parseTags(raw) {
+  if (!raw) return [];
+  try { return JSON.parse(raw); } catch { /* not JSON */ }
+  return raw.split(',').map((t) => t.trim()).filter(Boolean);
+}
+
 function formatDate(timestamp) {
   if (!timestamp) return '';
   const date = new Date(timestamp * 1000);
@@ -22,7 +28,7 @@ export default async function init(el) {
 
   if (!post) return;
 
-  const tags = post.tags ? JSON.parse(post.tags) : [];
+  const tags = parseTags(post.tags);
   const date = formatDate(post.date);
   const authorSlug = post.author ? post.author.toLowerCase().replace(/\s+/g, '-') : '';
 
