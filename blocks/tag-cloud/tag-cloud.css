@@ -1,0 +1,25 @@
+.tag-cloud {
+  .tag-cloud-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    line-height: 2;
+  }
+
+  .tag-cloud-item {
+    display: inline;
+    font-size: var(--body-font-size-s);
+    color: #00778b;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .tag-count {
+    color: var(--color-gray-500);
+    font-size: var(--body-font-size-xs);
+  }
+}
