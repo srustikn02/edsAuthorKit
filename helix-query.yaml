@@ -4,6 +4,7 @@ indices:
     include:
       - /blog/**
     exclude:
+      - /blog/
       - /blog/index
       - /blog/index*
       - /blog/metadata
