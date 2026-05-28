@@ -1,5 +1,7 @@
 function parseTags(raw) {
   if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw !== 'string') return [String(raw)];
   try { return JSON.parse(raw); } catch { /* not JSON */ }
   return raw.split(',').map((t) => t.trim()).filter(Boolean);
 }
