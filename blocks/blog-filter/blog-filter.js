@@ -85,11 +85,16 @@ export default async function init(el) {
     }
   });
 
-  // Check URL for pre-selected category
+  // Check URL for pre-selected category or tag
   const urlParams = new URLSearchParams(window.location.search);
-  const preselect = urlParams.get('category');
+  const preselect = urlParams.get('category') || urlParams.get('tag');
   if (preselect) {
     const match = el.querySelector(`.filter-btn[data-tag="${preselect}"]`);
-    if (match) match.click();
+    if (match) {
+      match.click();
+    } else {
+      // Tag not in filter tabs — dispatch directly to blog-cards
+      document.dispatchEvent(new CustomEvent('blog:filter', { detail: { tag: preselect } }));
+    }
   }
 }

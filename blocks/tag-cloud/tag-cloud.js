@@ -67,17 +67,9 @@ export default async function init(el) {
 
   for (const [name, count] of sorted) {
     const link = document.createElement('a');
-    link.href = '#';
+    link.href = `/blog/?tag=${encodeURIComponent(name)}`;
     link.className = 'tag-cloud-item';
     link.innerHTML = `${name} <span class="tag-count">(${count})</span>`;
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Dispatch filter event to blog-cards on the same page
-      document.dispatchEvent(new CustomEvent('blog:filter', { detail: { tag: name } }));
-      // Scroll to blog cards section
-      const cards = document.querySelector('.blog-cards');
-      if (cards) cards.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
     wrapper.append(link);
   }
 
